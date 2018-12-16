@@ -51,6 +51,10 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (args.Length == 0)
                 return ErrorTypes.NoArguments;
 
+            // Check for too many args
+            if (args.Length > 1)
+                return ErrorTypes.TooManyArgs;
+
             return result;
         }
 
