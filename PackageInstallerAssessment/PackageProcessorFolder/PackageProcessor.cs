@@ -24,11 +24,39 @@ namespace PackageInstallerAssessment.PackageProcessor
 
         public ErrorTypes Run(string[] args)
         {
-            throw new NotImplementedException();
+            ReturnTypes result = ReturnTypes.Valid;
+
+            try
+            {
+                // Get/process the inbound package
+                result = processArgs(args);
+
+                if (result != ErrorTypes.Valid)
+                {
+                    processInvalidResult(result);
+
+                    return result;
+                }
+
+                // TODO: get sequenced dependencies
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Message: " + ex.Message);
+                //Console.ReadLine();
+            }
+
+            return result;
         }
         public ErrorTypes processArgs(string[] args)
         {
-            throw new NotImplementedException();
+            ErrorTypes result = ErrorTypes.Valid;
+
+            // Check for no args
+            if (args.Length == 0)
+                return ErrorTypes.NoArguments;
+
+            return result;
         }
 
         public void processInvalidResult(ErrorTypes result)
