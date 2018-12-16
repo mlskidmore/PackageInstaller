@@ -55,7 +55,30 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (args.Length > 1)
                 return ErrorTypes.TooManyArgs;
 
+            // Convert args to a string so we can work with it
+            string packageCollection = args[0];
+
+            // Check for comma separation
+            if (checkForCommaSeparation(packageCollection) != ErrorTypes.Valid)
+                return ErrorTypes.NotCommaSeparated;
+
             return result;
+        }
+
+        public ErrorTypes checkForCommaSeparation(string packageString)
+        {
+            var parsedPackageArray = packageString.Split(',');
+            int commaCount = packageString.Split(',').Length - 1;
+
+            if (commaCount == 0)
+                return ErrorTypes.NotCommaSeparated;
+
+            if ((parsedPackageArray.Length - commaCount) > 1)
+                return ErrorTypes.NotCommaSeparated;
+
+            // TODO: find missing comma location
+
+            return ErrorTypes.Valid;
         }
 
         public void processInvalidResult(ErrorTypes result)

@@ -44,5 +44,19 @@ namespace PackageInstallerAssessment.UnitTests
             // Assert
             Assert.AreEqual(ErrorTypes.TooManyArgs, result);
         }
+
+        [TestMethod]
+        [Description("Should produce NotCommaSeparated ReturnType when packages are not comma separated.")]
+        public void NotCommaSeparated_Produces_NotCommaSeparatedResultTyoe()
+        {
+            // Arrange
+            string mockPackage = "KittenService: Leetmeme: Cyberportal Cyberportal: Ice CamelCaser: KittenService Fraudstream: Leetmeme Ice:";
+
+            // Act
+            var result = packageProcessor.checkForCommaSeparation(mockPackage);
+
+            // Assert
+            Assert.AreEqual(ErrorTypes.NotCommaSeparated, result);
+        }
     }
 }
