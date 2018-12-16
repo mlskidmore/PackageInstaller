@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 namespace PackageInstallerAssessment.PackageProcessor
 {
     public class PkgProcessor : IPackageProcessor
-    {   
+    {
+        // Use these for errors
+        private string[] packageMissingColon;
         // Use this to find dependencies        
         public List<IPackage> ParsedPackageCollection { get; private set; }
 
@@ -62,6 +64,10 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (checkForCommaSeparation(packageCollection) != ErrorTypes.Valid)
                 return ErrorTypes.NotCommaSeparated;
 
+            // Check for colon formatting
+            if (checkForColonFormatting(packageCollection) != ErrorTypes.Valid)
+                return ErrorTypes.ColonMissing;
+
             return result;
         }
 
@@ -77,6 +83,50 @@ namespace PackageInstallerAssessment.PackageProcessor
                 return ErrorTypes.NotCommaSeparated;
 
             // TODO: find missing comma location
+
+            return ErrorTypes.Valid;
+        }
+
+        public ErrorTypes checkForColonFormatting(string packageString)
+        {
+            int packagePosition = 0;
+
+            // Check if entire package list has at least one colon
+            if (!packageString.Contains(':'))
+                return ErrorTypes.ColonMissing;
+
+            var parsedPackageArray = packageString.Split(',');
+
+            // Strip off any white space
+            for (int i = 0; i < parsedPackageArray.Length; i++)
+            {
+                parsedPackageArray[i] = parsedPackageArray[i].Trim();
+            }
+
+            // Store packages missing a colon
+            packageMissingColon = new string[parsedPackageArray.Length];
+
+            // Find/keep any/all packages missing a colon
+            foreach (string element in parsedPackageArray)
+            {
+                if (!element.Contains(':') && !string.IsNullOrEmpty(element))
+                {
+                    if (element.Contains(' '))
+                        packageMissingColon[packagePosition] = element.Substring(0, element.IndexOf(' '));
+                    else
+                        packageMissingColon[packagePosition] = element;
+                }
+
+                packagePosition++;
+            }
+
+            // Remove null entries
+            packageMissingColon = packageMissingColon.Where(el => el != null).ToArray();
+
+            if (packageMissingColon.Length > 0)
+            {
+                return ErrorTypes.ColonMissing;
+            }
 
             return ErrorTypes.Valid;
         }

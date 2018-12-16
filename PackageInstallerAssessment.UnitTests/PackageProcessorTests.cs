@@ -70,7 +70,7 @@ namespace PackageInstallerAssessment.UnitTests
             var actualOutput = packageProcessor.checkForColonFormatting(inputPackage);
 
             // Assert
-            Assert.AreEqual(ReturnTypes.ColonMissing, actualOutput);
+            Assert.AreEqual(ErrorTypes.ColonMissing, actualOutput);
         }
     }
 }
