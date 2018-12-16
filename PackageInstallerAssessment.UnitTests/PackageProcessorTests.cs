@@ -58,5 +58,19 @@ namespace PackageInstallerAssessment.UnitTests
             // Assert
             Assert.AreEqual(ErrorTypes.NotCommaSeparated, result);
         }
+
+        [TestMethod]
+        [Description("Should produce ColonMissing ReturnType when colon is missing.")]
+        public void MissingColonInput_Produces_ColonMissingResultTyoe()
+        {
+            // Arrange
+            string inputPackage = "KittenService, Leetmeme:  Cyberportal,  Cyberportal  Ice, CamelCaser:  KittenService, Fraudstream: Leetmeme, Ice    ";
+
+            // Act
+            var actualOutput = packageProcessor.checkForColonFormatting(inputPackage);
+
+            // Assert
+            Assert.AreEqual(ReturnTypes.ColonMissing, actualOutput);
+        }
     }
 }
