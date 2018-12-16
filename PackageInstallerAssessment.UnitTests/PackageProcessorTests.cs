@@ -28,6 +28,21 @@ namespace PackageInstallerAssessment.UnitTests
 
             // Assert
             Assert.AreEqual(ErrorTypes.NoArguments, result);
-        }        
+        }
+
+        [TestMethod]
+        [Description("Should produce TooManyArgs ResultType.")]
+        public void TwoPackageInput_Produces_TooManyArgsResultType()
+        {
+            // Arrange
+            string[] mockPackage = { "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream: Leetmeme, Ice:",
+                                     "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream: Leetmeme, Ice:"};
+
+            // Act
+            var result = packageProcessor.Run(mockPackage);
+
+            // Assert
+            Assert.AreEqual(ErrorTypes.TooManyArgs, result);
+        }
     }
 }
