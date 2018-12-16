@@ -43,11 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorTypes.cs" />
+    <Compile Include="PackageFolder\IPackage.cs" />
+    <Compile Include="PackageFolder\Package.cs" />
+    <Compile Include="PackageProcessorFolder\IPackageProcessor.cs" />
+    <Compile Include="PackageProcessorFolder\PackageProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
