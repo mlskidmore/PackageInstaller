@@ -8,12 +8,7 @@ using System.Threading.Tasks;
 namespace PackageInstallerAssessment.PackageProcessor
 {
     public class PkgProcessor : IPackageProcessor
-    {
-        // Use these for errors
-        private string[] packageMissingColon;
-        private List<string> duplicatePackages;
-        public bool IsCycle = false;
-        
+    {   
         // Use this to find dependencies        
         public List<IPackage> ParsedPackageCollection { get; private set; }
 
@@ -24,7 +19,7 @@ namespace PackageInstallerAssessment.PackageProcessor
 
         public ErrorTypes Run(string[] args)
         {
-            ReturnTypes result = ReturnTypes.Valid;
+            ErrorTypes result = ErrorTypes.Valid;
 
             try
             {
@@ -61,8 +56,21 @@ namespace PackageInstallerAssessment.PackageProcessor
 
         public void processInvalidResult(ErrorTypes result)
         {
-            throw new NotImplementedException();
-        }       
+            switch (result)
+            {
+                case ErrorTypes.NoArguments:
+                    writeLine("You must provide a list of single dependency packages.");
+                    writeLine("Example: \"KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice\"");
+                    break;
+            }
+        }
+
+        public void writeLine(string s)
+        {
+            Console.WriteLine(s);
+
+            //Console.ReadLine();
+        }
 
         public void writeLine(string[] s)
         {
