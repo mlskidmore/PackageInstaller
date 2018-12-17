@@ -11,6 +11,8 @@ namespace PackageInstallerAssessment.PackageProcessor
     {
         // Use these for errors
         private string[] packageMissingColon;
+        private List<string> duplicatePackages;
+
         // Use this to find dependencies        
         public List<IPackage> ParsedPackageCollection { get; private set; }
 
@@ -75,6 +77,10 @@ namespace PackageInstallerAssessment.PackageProcessor
             // Check each package has a dependency
             if (checkForNoDependencies(packageCollection) != ErrorTypes.NoDependency)
                 return ErrorTypes.NoDependency;
+
+            // Check for no Package duplicates
+            if (checkForPackageDupes(packageCollection) != ErrorTypes.PackageHasDupe)
+                return ErrorTypes.PackageHasDupe;
 
             return ErrorTypes.Valid;
         }
@@ -182,6 +188,41 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (dependencies.Count() == 0)
                 // After stripping spaces, following strings determine no dependency
                 return ErrorTypes.NoDependency;
+
+            return ErrorTypes.Valid;
+        }
+
+        public ErrorTypes checkForPackageDupes(string packageString)
+        {
+            var parsedPackage = packageString.Split(',');
+            var packageDupes = new List<string>();
+            var dependencyDupes = new List<string>();
+
+            foreach (string packageDependencyPair in parsedPackage)
+            {
+                string[] pair = packageDependencyPair.Split(':');
+
+                string packageName = pair[0].Trim();
+                string dependencyName = pair[1].Trim();
+
+                packageDupes.Add(packageName);
+                dependencyDupes.Add(dependencyName); // if dep dupes are needed
+            }
+
+            // Count package dupes
+            bool areDupes = packageDupes.GroupBy(n => n).Any(c => c.Count() > 1);
+
+            // Get the duplicate package names
+            duplicatePackages = packageDupes.GroupBy(p => p)
+                                            .Where(group => group.Count() > 1)
+                                            .Select(group => group.Key)
+                                            .ToList();
+
+            if (areDupes)
+                return ErrorTypes.PackageHasDupe;
+
+            // No dupes - ready to work with inbound package collection
+            //_packageCollection = parsedPackage;
 
             return ErrorTypes.Valid;
         }
