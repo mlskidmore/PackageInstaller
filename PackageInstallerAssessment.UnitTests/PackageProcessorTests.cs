@@ -89,5 +89,20 @@ namespace PackageInstallerAssessment.UnitTests
             // Assert
             Assert.AreEqual(ErrorTypes.InvalidPair, actualOutput);
         }
+
+        [TestMethod]
+        [Description("Should produce NoDependency ReturnType when each package has no dependency.")]
+        public void NoDependency_Produces_NoDependencyResultType()
+        {
+            // Arrange
+            //string[] inputPackage = { "KittenService:, Leetmeme:,  Cyberportal:,   CamelCaser:,    Fraudstream:,     Ice:" };
+            string[] inputPackage = { "KittenService:, Cyberportal:,   CamelCaser:   ,   Fraudstream:     , Ice:" };
+
+            // Act
+            var actualOutpout = packageProcessor.Run(inputPackage);
+
+            // Assert
+            Assert.AreEqual(ErrorTypes.NoDependency, actualOutpout);
+        }
     }
 }
