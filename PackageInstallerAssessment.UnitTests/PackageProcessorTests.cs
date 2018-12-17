@@ -103,5 +103,19 @@ namespace PackageInstallerAssessment.UnitTests
             // Assert
             Assert.AreEqual(ErrorTypes.NoDependency, actualOutpout);
         }
+
+        [TestMethod]
+        [Description("Should produce PackageDupe ReturnType when there are duplicate packages.")]
+        public void DupePackage_Produces_PackageHasDupeResultType()
+        {
+            // Arrange
+            string inputPackage = "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Cyberportal: Leetmeme, KittenService:";
+
+            // Act
+            var actualOutpout = packageProcessor.checkForPackageDupes(inputPackage);
+
+            // Assert
+            Assert.AreEqual(ErrorTypes.PackageHasDupe, actualOutpout);
+        }
     }
 }
