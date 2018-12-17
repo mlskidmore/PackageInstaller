@@ -95,11 +95,10 @@ namespace PackageInstallerAssessment.UnitTests
         public void NoDependency_Produces_NoDependencyResultType()
         {
             // Arrange
-            //string[] inputPackage = { "KittenService:, Leetmeme:,  Cyberportal:,   CamelCaser:,    Fraudstream:,     Ice:" };
-            string[] inputPackage = { "KittenService:, Cyberportal:,   CamelCaser:   ,   Fraudstream:     , Ice:" };
+            string inputPackage = "KittenService:, Cyberportal:, CamelCaser:, Fraudstream:, Ice:" ;
 
             // Act
-            var actualOutpout = packageProcessor.Run(inputPackage);
+            var actualOutpout = packageProcessor.checkForNoDependencies(inputPackage);
 
             // Assert
             Assert.AreEqual(ErrorTypes.NoDependency, actualOutpout);

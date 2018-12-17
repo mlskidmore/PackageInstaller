@@ -72,6 +72,10 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (checkForPairs(packageCollection) != ErrorTypes.Valid)
                 return ErrorTypes.InvalidPair;
 
+            // Check each package has a dependency
+            if (checkForNoDependencies(packageCollection) != ErrorTypes.NoDependency)
+                return ErrorTypes.NoDependency;
+
             return ErrorTypes.Valid;
         }
 
@@ -149,6 +153,38 @@ namespace PackageInstallerAssessment.PackageProcessor
             return ErrorTypes.Valid;
         }
 
+        public ErrorTypes checkForNoDependencies(string packageString)
+        {
+            // Remove extra white spaces between comma and next package name
+            //packageString = new Regex(" {2,}").Replace(packageString, " ");
+            while (packageString.Contains("  "))
+                packageString = packageString.Replace("  ", " ");
+
+            // Remove extra white space between colon and next comma
+            while (packageString.Contains(": ,"))
+                packageString = packageString.Replace(": ,", ":,");
+
+            packageString = packageString.Trim();
+
+            var parsedPackageArray = packageString.Split(',');
+
+            //var packages = new List<string>();
+            var dependencies = new List<string>();
+
+            foreach (string package in parsedPackageArray)
+            {
+                string[] pair = package.Split(':');
+
+                if (!string.IsNullOrEmpty(pair[1].Trim()))
+                    dependencies.Add(pair[1]);
+            }
+
+            if (dependencies.Count() == 0)
+                // After stripping spaces, following strings determine no dependency
+                return ErrorTypes.NoDependency;
+
+            return ErrorTypes.Valid;
+        }
         public void processInvalidResult(ErrorTypes result)
         {
             switch (result)
