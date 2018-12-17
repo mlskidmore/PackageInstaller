@@ -72,5 +72,22 @@ namespace PackageInstallerAssessment.UnitTests
             // Assert
             Assert.AreEqual(ErrorTypes.ColonMissing, actualOutput);
         }
+
+        [TestMethod]
+        [Description("Should produce InvalidPair ReturnType when package is missing.")]
+        public void MissingPair_Produces_InvalidPairType()
+        {
+            // Arrange
+            // Missing first pair
+            string inputPackage = ", Leetmeme: Cyberportal, Cyberportal Ice, CamelCaser:  KittenService, Fraudstream: Leetmeme, Ice";
+            // More than pair.length == 2
+            //string inputPackage = "KittenService:, Leetmeme: Cyberportal:, Cyberportal Ice, CamelCaser:  KittenService, Fraudstream: Leetmeme, Ice";
+
+            // Act
+            var actualOutput = packageProcessor.checkForPairs(inputPackage);
+
+            // Assert
+            Assert.AreEqual(ErrorTypes.InvalidPair, actualOutput);
+        }
     }
 }

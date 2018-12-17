@@ -68,7 +68,11 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (checkForColonFormatting(packageCollection) != ErrorTypes.Valid)
                 return ErrorTypes.ColonMissing;
 
-            return result;
+            // Check for package/dependency pair
+            if (checkForPairs(packageCollection) != ErrorTypes.Valid)
+                return ErrorTypes.InvalidPair;
+
+            return ErrorTypes.Valid;
         }
 
         public ErrorTypes checkForCommaSeparation(string packageString)
@@ -128,6 +132,20 @@ namespace PackageInstallerAssessment.PackageProcessor
                 return ErrorTypes.ColonMissing;
             }
 
+            return ErrorTypes.Valid;
+        }
+
+        public ErrorTypes checkForPairs(string packageString)
+        {
+            var packageArray = packageString.Split(',');
+
+            foreach (string package in packageArray)
+            {
+                string[] pair = package.Split(':');
+
+                if (pair.Length != 2)
+                    return ErrorTypes.InvalidPair;
+            }
             return ErrorTypes.Valid;
         }
 
