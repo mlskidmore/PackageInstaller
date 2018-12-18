@@ -15,7 +15,7 @@ namespace PackageInstallerAssessment.PackageProcessor
         private List<string> duplicatePackages;
         public bool IsCycle = false;
 
-        // Use this to find dependencies        
+        // Use this to find/store sequenced dependencies        
         public List<IPackage> ParsedPackageCollection { get; private set; }
 
         public PkgProcessor()
@@ -23,16 +23,16 @@ namespace PackageInstallerAssessment.PackageProcessor
             ParsedPackageCollection = new List<IPackage>();
         }
 
-        public ErrorTypes Run(string[] args)
+        public ErrorType Run(string[] args)
         {
-            ErrorTypes result = ErrorTypes.Valid;
+            ErrorType result = ErrorType.Valid;
 
             try
             {
                 // Get/process the inbound package
                 result = processArgs(args);
 
-                if (result != ErrorTypes.Valid)
+                if (result != ErrorType.Valid)
                 {
                     processInvalidResult(result);
 
@@ -49,69 +49,69 @@ namespace PackageInstallerAssessment.PackageProcessor
 
             return result;
         }
-        public ErrorTypes processArgs(string[] args)
+        public ErrorType processArgs(string[] args)
         {
             // Check for no args
             if (args.Length == 0)
-                return ErrorTypes.NoArguments;
+                return ErrorType.NoArguments;
 
             // Check for too many args
             if (args.Length > 1)
-                return ErrorTypes.TooManyArgs;
+                return ErrorType.TooManyArgs;
 
             // Convert args to a string so we can work with it
             string packageCollection = args[0];
 
             // Check for comma separation
-            if (checkForCommaSeparation(packageCollection) != ErrorTypes.Valid)
-                return ErrorTypes.NotCommaSeparated;
+            if (checkForCommaSeparation(packageCollection) != ErrorType.Valid)
+                return ErrorType.NotCommaSeparated;
 
             // Check for colon formatting
-            if (checkForColonFormatting(packageCollection) != ErrorTypes.Valid)
-                return ErrorTypes.ColonMissing;
+            if (checkForColonFormatting(packageCollection) != ErrorType.Valid)
+                return ErrorType.ColonMissing;
 
             // Check for package/dependency pair
-            if (checkForPairs(packageCollection) != ErrorTypes.Valid)
-                return ErrorTypes.InvalidPair;
+            if (checkForPairs(packageCollection) != ErrorType.Valid)
+                return ErrorType.InvalidPair;
 
             // Check for at least one dependency
-            if (checkForNoDependencies(packageCollection) != ErrorTypes.NoDependency)
-                return ErrorTypes.NoDependency;
+            if (checkForNoDependencies(packageCollection) != ErrorType.NoDependency)
+                return ErrorType.NoDependency;
 
             // Check for no Package duplicates
-            if (checkForPackageDupes(packageCollection) != ErrorTypes.PackageHasDupe)
-                return ErrorTypes.PackageHasDupe;
+            if (checkForPackageDupes(packageCollection) != ErrorType.PackageHasDupe)
+                return ErrorType.PackageHasDupe;
 
             // Check for package cycles
-            if (OrderDependencies(packageCollection) != ErrorTypes.PackageHasCycle)
-                return ErrorTypes.PackageHasCycle;
+            if (OrderDependencies(packageCollection) != ErrorType.PackageHasCycle)
+                return ErrorType.PackageHasCycle;
 
-            return ErrorTypes.Valid;
+            return ErrorType.Valid;
         }
 
-        public ErrorTypes checkForCommaSeparation(string packageString)
+        public ErrorType checkForCommaSeparation(string packageString)
         {
             var parsedPackageArray = packageString.Split(',');
             int commaCount = packageString.Split(',').Length - 1;
 
             if (commaCount == 0)
-                return ErrorTypes.NotCommaSeparated;
+                return ErrorType.NotCommaSeparated;
 
             if ((parsedPackageArray.Length - commaCount) > 1)
-                return ErrorTypes.NotCommaSeparated;
+                return ErrorType.NotCommaSeparated;
 
             // TODO: find missing comma location
 
-            return ErrorTypes.Valid;
+            return ErrorType.Valid;
         }
 
-        public ErrorTypes checkForColonFormatting(string packageString)
+        public ErrorType checkForColonFormatting(string packageString)
         {
             int packagePosition = 0;
 
             // Check if entire package list has at least one colon
             if (!packageString.Contains(':'))
-                return ErrorTypes.ColonMissing;
+                return ErrorType.ColonMissing;
 
             var parsedPackageArray = packageString.Split(',');
 
@@ -143,13 +143,13 @@ namespace PackageInstallerAssessment.PackageProcessor
 
             if (packageMissingColon.Length > 0)
             {
-                return ErrorTypes.ColonMissing;
+                return ErrorType.ColonMissing;
             }
 
-            return ErrorTypes.Valid;
+            return ErrorType.Valid;
         }
 
-        public ErrorTypes checkForPairs(string packageString)
+        public ErrorType checkForPairs(string packageString)
         {
             var packageArray = packageString.Split(',');
 
@@ -158,12 +158,12 @@ namespace PackageInstallerAssessment.PackageProcessor
                 string[] pair = package.Split(':');
 
                 if (pair.Length != 2)
-                    return ErrorTypes.InvalidPair;
+                    return ErrorType.InvalidPair;
             }
-            return ErrorTypes.Valid;
+            return ErrorType.Valid;
         }
 
-        public ErrorTypes checkForNoDependencies(string packageString)
+        public ErrorType checkForNoDependencies(string packageString)
         {
             // Remove extra white spaces between comma and next package name
             //packageString = new Regex(" {2,}").Replace(packageString, " ");
@@ -191,12 +191,12 @@ namespace PackageInstallerAssessment.PackageProcessor
 
             if (dependencies.Count() == 0)
                 // After stripping spaces, following strings determine no dependency
-                return ErrorTypes.NoDependency;
+                return ErrorType.NoDependency;
 
-            return ErrorTypes.Valid;
+            return ErrorType.Valid;
         }
 
-        public ErrorTypes checkForPackageDupes(string packageString)
+        public ErrorType checkForPackageDupes(string packageString)
         {
             var parsedPackage = packageString.Split(',');
             var packageDupes = new List<string>();
@@ -223,19 +223,19 @@ namespace PackageInstallerAssessment.PackageProcessor
                                             .ToList();
 
             if (areDupes)
-                return ErrorTypes.PackageHasDupe;
+                return ErrorType.PackageHasDupe;
 
-            return ErrorTypes.Valid;
+            return ErrorType.Valid;
         }
 
-        public ErrorTypes OrderDependencies(string PackageCollection)
+        public ErrorType OrderDependencies(string PackageCollection)
         {
             var parsedPackage = PackageCollection.Split(',');
 
             if (CheckForCycles(ref parsedPackage))
-                return ErrorTypes.PackageHasCycle;
+                return ErrorType.PackageHasCycle;
 
-            return ErrorTypes.Valid;
+            return ErrorType.Valid;
         }
 
         private bool CheckForCycles(ref string[] parsedPackage)
@@ -339,14 +339,16 @@ namespace PackageInstallerAssessment.PackageProcessor
             return packageHasCycle(package.Dependency, originalPackageName);
         }
 
-        public void processInvalidResult(ErrorTypes result)
+        public void processInvalidResult(ErrorType errorType)
         {
-            switch (result)
+            switch (errorType)
             {
-                case ErrorTypes.NoArguments:
+                case ErrorType.NoArguments:
                     writeLine("You must provide a list of single dependency packages.");
                     writeLine("Example: \"KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice\"");
                     break;
+
+                // TODO: implement remaining cases
             }
         }
 

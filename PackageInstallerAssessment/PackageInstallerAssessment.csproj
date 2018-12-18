@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorTypes.cs" />
+    <Compile Include="ErrorType.cs" />
     <Compile Include="PackageFolder\IPackage.cs" />
     <Compile Include="PackageFolder\Package.cs" />
     <Compile Include="PackageProcessorFolder\IPackageProcessor.cs" />

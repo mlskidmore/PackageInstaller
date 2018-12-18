@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PackageInstallerAssessment
 {
-    public enum ErrorTypes
+    public enum ErrorType
     {
         Valid = 0,
         NoArguments = 1,

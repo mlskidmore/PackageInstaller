@@ -27,7 +27,7 @@ namespace PackageInstallerAssessment.UnitTests
             var result = packageProcessor.Run(inputPackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.NoArguments, result);
+            Assert.AreEqual(ErrorType.NoArguments, result);
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace PackageInstallerAssessment.UnitTests
             var result = packageProcessor.Run(mockPackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.TooManyArgs, result);
+            Assert.AreEqual(ErrorType.TooManyArgs, result);
         }
 
         [TestMethod]
@@ -56,7 +56,7 @@ namespace PackageInstallerAssessment.UnitTests
             var result = packageProcessor.checkForCommaSeparation(mockPackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.NotCommaSeparated, result);
+            Assert.AreEqual(ErrorType.NotCommaSeparated, result);
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@ namespace PackageInstallerAssessment.UnitTests
             var actualOutput = packageProcessor.checkForColonFormatting(inputPackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.ColonMissing, actualOutput);
+            Assert.AreEqual(ErrorType.ColonMissing, actualOutput);
         }
 
         [TestMethod]
@@ -87,7 +87,7 @@ namespace PackageInstallerAssessment.UnitTests
             var actualOutput = packageProcessor.checkForPairs(inputPackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.InvalidPair, actualOutput);
+            Assert.AreEqual(ErrorType.InvalidPair, actualOutput);
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace PackageInstallerAssessment.UnitTests
             var actualOutpout = packageProcessor.checkForNoDependencies(inputPackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.NoDependency, actualOutpout);
+            Assert.AreEqual(ErrorType.NoDependency, actualOutpout);
         }
 
         [TestMethod]
@@ -115,7 +115,7 @@ namespace PackageInstallerAssessment.UnitTests
             var actualOutpout = packageProcessor.checkForPackageDupes(inputPackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.PackageHasDupe, actualOutpout);
+            Assert.AreEqual(ErrorType.PackageHasDupe, actualOutpout);
         }
 
         [TestMethod]
@@ -129,7 +129,7 @@ namespace PackageInstallerAssessment.UnitTests
             var actualOutpout = packageProcessor.OrderDependencies(inputCyclePackage);
 
             // Assert
-            Assert.AreEqual(ErrorTypes.PackageHasCycle, actualOutpout);
+            Assert.AreEqual(ErrorType.PackageHasCycle, actualOutpout);
         }
     }
 }

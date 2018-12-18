@@ -8,9 +8,9 @@ namespace PackageInstallerAssessment.PackageProcessor
 {
     public interface IPackageProcessor
     {
-        ErrorTypes Run(string[] args);
-        ErrorTypes processArgs(string[] args);
-        void processInvalidResult(ErrorTypes result);
+        ErrorType Run(string[] args);
+        ErrorType processArgs(string[] args);
+        void processInvalidResult(ErrorType result);
         void writeLine(string[] s);
     }
 }
