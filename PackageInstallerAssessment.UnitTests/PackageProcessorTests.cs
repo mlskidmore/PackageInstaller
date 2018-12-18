@@ -117,5 +117,19 @@ namespace PackageInstallerAssessment.UnitTests
             // Assert
             Assert.AreEqual(ErrorTypes.PackageHasDupe, actualOutpout);
         }
+
+        [TestMethod]
+        [Description("Should produce PackageHasCycle ReturnType when package contains a cycle.")]
+        public void CylcePackage_Produces_PackageHasCyclesResultType()
+        {
+            // Arrange
+            string inputCyclePackage = "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream:, Ice: Leetmeme";
+            //string inputCyclePackage = "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream: Leetmeme, Ice:";
+            // Act
+            var actualOutpout = packageProcessor.checkForCycles(inputCyclePackage);
+
+            // Assert
+            Assert.AreEqual(ErrorTypes.PackageHasCycle, actualOutpout);
+        }
     }
 }
