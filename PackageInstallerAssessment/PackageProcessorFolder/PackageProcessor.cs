@@ -1,5 +1,6 @@
 ﻿using PackageInstallerAssessment.PackageFolder;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace PackageInstallerAssessment.PackageProcessor
         // Use these for errors
         private string[] packageMissingColon;
         private List<string> duplicatePackages;
+        public bool IsCycle = false;
 
         // Use this to find dependencies        
         public List<IPackage> ParsedPackageCollection { get; private set; }
@@ -49,8 +51,6 @@ namespace PackageInstallerAssessment.PackageProcessor
         }
         public ErrorTypes processArgs(string[] args)
         {
-            ErrorTypes result = ErrorTypes.Valid;
-
             // Check for no args
             if (args.Length == 0)
                 return ErrorTypes.NoArguments;
@@ -74,13 +74,17 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (checkForPairs(packageCollection) != ErrorTypes.Valid)
                 return ErrorTypes.InvalidPair;
 
-            // Check each package has a dependency
+            // Check for at least one dependency
             if (checkForNoDependencies(packageCollection) != ErrorTypes.NoDependency)
                 return ErrorTypes.NoDependency;
 
             // Check for no Package duplicates
             if (checkForPackageDupes(packageCollection) != ErrorTypes.PackageHasDupe)
                 return ErrorTypes.PackageHasDupe;
+
+            // Check for package cycles
+            if (OrderDependencies(packageCollection) != ErrorTypes.PackageHasCycle)
+                return ErrorTypes.PackageHasCycle;
 
             return ErrorTypes.Valid;
         }
@@ -221,11 +225,120 @@ namespace PackageInstallerAssessment.PackageProcessor
             if (areDupes)
                 return ErrorTypes.PackageHasDupe;
 
-            // No dupes - ready to work with inbound package collection
-            //_packageCollection = parsedPackage;
+            return ErrorTypes.Valid;
+        }
+
+        public ErrorTypes OrderDependencies(string PackageCollection)
+        {
+            var parsedPackage = PackageCollection.Split(',');
+
+            if (CheckForCycles(ref parsedPackage))
+                return ErrorTypes.PackageHasCycle;
 
             return ErrorTypes.Valid;
         }
+
+        private bool CheckForCycles(ref string[] parsedPackage)
+        {
+            foreach (string package in parsedPackage)
+            {
+                string[] pair = package.Split(':');
+
+                string packageName = pair[0].Trim();
+                string dependencyName = pair[1].Trim();
+
+                CheckPackageAndDependency(packageName, dependencyName);
+            }
+
+            if (!IsCycle)
+                return true;
+
+            return false;
+        }
+        private bool CheckPackageAndDependency(string packageName, string dependencyName = null)
+        {
+            // Check if package already exits...
+            var existingPackage = CheckForExistingPackage(packageName);
+
+            // If pkg exists and has dependency, cycle exists
+            if (existingPackage != null && existingPackage.Dependency != null)
+            {
+                IsCycle = true;
+                return IsCycle;
+            }
+
+            var newPackages = new List<IPackage>();
+
+            IPackage dependency = default(IPackage);
+
+            // When dependency name is available check for it
+            if (!string.IsNullOrWhiteSpace(dependencyName))
+                dependency = FindOrCreatePackage(dependencyName, newPackages);
+
+            // Same for package: get it from the list or create it
+            var package = FindOrCreatePackage(packageName, newPackages);
+            package.Dependency = dependency;
+
+            // Now check for cycles
+            if (packageHasCycle(package, package.packageName))
+            {
+                IsCycle = true;
+                return IsCycle;
+            }
+
+            ParsedPackageCollection.AddRange(newPackages);
+            var last = ParsedPackageCollection.Last();
+            ParsedPackageCollection.Add(last);
+
+            return false;
+        }
+
+        private IPackage CheckForExistingPackage(string packageName)
+        {
+            return ParsedPackageCollection.Find(p => p.packageName.Equals(p.packageName, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        private IPackage FindOrCreatePackage(string packageName, IList packages = null)
+        {
+            var package = CheckForExistingPackage(packageName);
+
+            // If no existing package, create it
+            if (package == null)
+            {
+                package = new Package()
+                {
+                    packageName = packageName
+                };
+
+                if (packages == null)
+                {
+                    packages = ParsedPackageCollection;
+                }
+
+                packages.Add(package);
+            }
+
+            return package;
+        }
+
+        private bool packageHasCycle(IPackage package, string originalPackageName)
+        {
+            // If the dependency is null, can't be a cycle
+            if (package.Dependency == null)
+                return false;
+
+            // If package name = dependency name, cycle exists
+            if (package.Equals(package.Dependency))
+                return true;
+
+            // If originaPackageName is same as dependency Name, cycle exists
+            if (package.Dependency.packageName == originalPackageName)
+                return true;
+
+            // Recurse through dependencies
+            return packageHasCycle(package.Dependency, originalPackageName);
+        }
+
         public void processInvalidResult(ErrorTypes result)
         {
             switch (result)

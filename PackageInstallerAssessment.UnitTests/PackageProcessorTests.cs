@@ -123,10 +123,10 @@ namespace PackageInstallerAssessment.UnitTests
         public void CylcePackage_Produces_PackageHasCyclesResultType()
         {
             // Arrange
-            string inputCyclePackage = "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream:, Ice: Leetmeme";
-            //string inputCyclePackage = "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream: Leetmeme, Ice:";
+            //string inputCyclePackage = "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream:, Ice: Leetmeme";
+            string inputCyclePackage = "KittenService:, Leetmeme: Cyberportal, Cyberportal: Ice, CamelCaser: KittenService, Fraudstream: Leetmeme, Ice:";
             // Act
-            var actualOutpout = packageProcessor.checkForCycles(inputCyclePackage);
+            var actualOutpout = packageProcessor.OrderDependencies(inputCyclePackage);
 
             // Assert
             Assert.AreEqual(ErrorTypes.PackageHasCycle, actualOutpout);
